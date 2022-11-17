@@ -28,9 +28,13 @@ async function inicio()
             height: 800
         });
 
+        const response = await page.goto(link);
+        const body = await response.text();
+        const { window: { document } } = new jsdom.JSDOM(body);
+
         const delay = 3000;
         const wait = (ms) => new Promise(res => setTimeout(res, ms));
-        const count = async () => document.querySelectorAll('#contents')[2].length;
+        const count = async () => document.querySelectorAll('#contents')[2].childElementCount - 1;;
         const scrollDown = async () => {
 
         document.querySelectorAll('#contents')[2].lastChild
