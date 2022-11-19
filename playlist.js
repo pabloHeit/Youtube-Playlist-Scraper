@@ -25,27 +25,27 @@ async function inicio()
     await browser.close();
 }
 
-const scrapSongs = async () => {
-    songTitles = await page.evaluate(resultsSelector => {
-        return [...document.querySelectorAll(resultsSelector)].map(anchor => {
-            var title = anchor.textContent.split("\n");
-            
-            title = Array.from([...new Set(title)]);
-            
-            return title[8].trim();
-        });
-    }, resultsSelector);
-    songTitles = Array.from([...new Set(songTitles)]);
-
-    return songTitles
-};
-
 async function scrapePlaylist( 
     page,
     itemCount,
     scrollDelay = 2000,
   ) {
     const resultsSelector = "ytd-playlist-video-renderer";
+    
+    const scrapSongs = async () => {
+        songTitles = await page.evaluate(resultsSelector => {
+            return [...document.querySelectorAll(resultsSelector)].map(anchor => {
+                var title = anchor.textContent.split("\n");
+                
+                title = Array.from([...new Set(title)]);
+                
+                return title[8].trim();
+            });
+        }, resultsSelector);
+        songTitles = Array.from([...new Set(songTitles)]);
+    
+        return songTitles
+    };
 
     let songTitles = [];
     console.log("Inicia busqueda");
