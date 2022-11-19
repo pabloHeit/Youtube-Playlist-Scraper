@@ -1,5 +1,4 @@
 const puppeteer = require('puppeteer');
-const fs = require('fs');
 const jsdom = require('jsdom');
 
 inicio();
@@ -21,17 +20,25 @@ async function inicio()
     const body = await response.text();
     const { window: { document } } = new jsdom.JSDOM(body);
 
-    await scrapePlaylist(page, 1400);
+    await scrapePlaylist(page);
     await browser.close();
 }
 
 async function scrapePlaylist( 
     page,
-    itemCount,
-    scrollDelay = 2000,
+    scrollDelay = 2000
   ) {
-    const resultsSelector = "ytd-playlist-video-renderer";
     
+    itemCount = await page.evaluate(async ()  => {
+        const count = await document.querySelectorAll(".byline-item.style-scope.ytd-playlist-byline-renderer")[0].childNodes[0].innerHTML;
+        return count;
+    });
+
+    itemCount = itemCount.replace(",", "");
+    itemCount = parseInt(itemCount);
+    
+    const resultsSelector = "ytd-playlist-video-renderer";
+
     const scrapSongs = async () => {
         songTitles = await page.evaluate(resultsSelector => {
             return [...document.querySelectorAll(resultsSelector)].map(anchor => {
@@ -48,7 +55,8 @@ async function scrapePlaylist(
     };
 
     let songTitles = [];
-    console.log("Inicia busqueda");
+    console.log("Starts the search");
+    console.log(`Songs to scrap: ${itemCount}`);
 
     try {
         var previousSongsCount = 0;
