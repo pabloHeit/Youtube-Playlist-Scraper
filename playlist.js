@@ -1,5 +1,4 @@
 const puppeteer = require('puppeteer');
-const jsdom = require('jsdom');
 
 async function init(link)
 {    
@@ -87,6 +86,5 @@ async function scrapeYoutubePlaylist(
 }
 
 module.exports = {
-    "init": init,
-    "scrapePlaylist": scrapeYoutubePlaylist
+    "init": init
 }

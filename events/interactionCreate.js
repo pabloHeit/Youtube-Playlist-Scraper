@@ -19,18 +19,21 @@ module.exports = {
 
 		try {
 			if (interaction.commandName == "displaylist") {
-				listSongs = await command.execute(interaction);
 				const channel = await bot.client.channels.fetch(interaction.channelId);
-				channel.send("Epic spam in 3");
+				listSongs = await command.execute(interaction);
+				const prefix = interaction.options.getString('prefix') ?? '';
+
+				channel.send("Epic spam in 3...");
 				await sleep(1000);
-				channel.send("2");
+				channel.send("2..");
 				await sleep(1000);
-				channel.send("1");
-				channel.send("------0------");
+				channel.send("1.");
+				channel.send("------------");
+
 
 				for (let i = 0; i < listSongs.length; i++) {
-					await sleep(1000);	
-					channel.send(listSongs[i]);
+					await sleep(1000);
+					channel.send(`${prefix} ${listSongs[i]}`);
 				}
 			}
 			else{
