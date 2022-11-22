@@ -1,12 +1,8 @@
 const puppeteer = require('puppeteer');
 const jsdom = require('jsdom');
 
-inicio();
-
-async function inicio()
-{
-    var link = "https://www.youtube.com/playlist?list=PLqqrmh-jevJ3nZVUadht433c6_QcC0jTK";
-    
+async function init(link)
+{    
     const browser = await puppeteer.launch({
         headless: false
     });
@@ -16,15 +12,14 @@ async function inicio()
         width: 1200,
         height: 800
     });
-    const response = await page.goto(link);
-    const body = await response.text();
-    const { window: { document } } = new jsdom.JSDOM(body);
 
-    await scrapePlaylist(page);
+    var songList = await scrapeYoutubePlaylist(page);
     await browser.close();
+
+    return songList;
 }
 
-async function scrapePlaylist( 
+async function scrapeYoutubePlaylist( 
     page,
     scrollDelay = 2000
   ) {
@@ -63,7 +58,7 @@ async function scrapePlaylist(
         var redundant_iterations = 0;
 
         actualHeight = await page.evaluate("document.body.scrollHeight");
-        while (songTitles.length < itemCount && redundant_iterations <= 5) {
+        while (songTitles.length < itemCount && redundant_iterations <= 3) {
             actualHeight += 10000;
             songTitles = await scrapSongs();
             await page.evaluate(`window.scrollTo(0, ${actualHeight})`);
@@ -75,7 +70,7 @@ async function scrapePlaylist(
                 previousSongsCount = songTitles.length;
                 redundant_iterations = 0;
             }
-            console.log(`Songs scraped: ${songTitles.length}`);
+            // console.log(`Songs scraped: ${songTitles.length}`);
             // console.log(`songTitles length: ${songTitles.length}`);
             // console.log(`previousSongsCount: ${previousSongsCount}`);
             // console.log(`redundant_iterations: ${redundant_iterations}`);
@@ -85,8 +80,13 @@ async function scrapePlaylist(
       }
     } catch(e) { console.log(e);}
 
-    console.log(songTitles.join('\n'));
-    console.log(songTitles.length);
+    // console.log(songTitles.join('\n'));
+    console.log("Scraped songs: "+ songTitles.length);
 
     return songTitles
-  }
+}
+
+module.exports = {
+    "init": init,
+    "scrapePlaylist": scrapeYoutubePlaylist
+}
